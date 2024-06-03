@@ -2,6 +2,11 @@
 
 Este projeto é um CRUD de grafos desenvolvido com FastAPI e SQLAlchemy. Ele permite criar, ler, atualizar e deletar grafos, além de buscar rotas e a rota mais curta entre nós em um grafo.
 
+## Documentação
+
+A documentação da API está disponível em `http://127.0.0.1:8000/docs`.
+
+
 ## Requisitos
 
 - Python 3.11
