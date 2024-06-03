@@ -2,6 +2,28 @@
 
 Este projeto é um CRUD de grafos desenvolvido com FastAPI e SQLAlchemy. Ele permite criar, ler, atualizar e deletar grafos, além de buscar rotas e a rota mais curta entre nós em um grafo.
 
+## Funcionalidades Implementadas
+
+- CRUD de Coordenadas Geográficas
+- Cálculo de Distância com PostGIS
+- Operações com Grafos
+- Testes Automatizados
+- Imagens Docker Otimizadas
+- Configuração de Workflow no Git para Linting e Testes
+- Documentação
+
+## Funcionalidades Não Implementadas
+
+Infelizmente, devido a restrições de tempo, não foi possível implementar as seguintes funcionalidades:
+
+- **Logs**: A parte de logs detalhados e configuração de monitoramento não foi realizada.
+- **Demonstração de Cálculo de Custo Computacional**: A demonstração do cálculo do custo computacional do algoritmo de busca e as conclusões de otimização não foram incluídas.
+- **RBAC (Role-Based Access Control)**: A implementação de uma organização básica dos usuários e níveis de acesso ficou pendente.
+- **Deploy Básico**: O deploy em uma plataforma gratuita não foi realizado (configuei apenas até a realização dos testes no workflow).
+
+Agradeço a compreensão e estou disponível para discutir mais detalhes sobre o projeto ou para esclarecer quaisquer dúvidas.
+
+
 ## Documentação
 
 A documentação da API está disponível em `http://127.0.0.1:8000/docs`.
