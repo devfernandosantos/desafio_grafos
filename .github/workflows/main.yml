@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgis/postgis:13-3.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: grafos_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d grafos_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/grafos_db
+      DATABASE_DRIVER_URL: postgres+psycopg2://postgres:postgres@localhost:5432/grafos_db
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Wait for PostgreSQL to be ready
+      run: |
+        until pg_isready -h localhost -U postgres -d grafos_db; do
+          echo "Waiting for PostgreSQL..."
+          sleep 1
+        done
+
+    - name: Run Alembic migrations
+      run: |
+        source venv/bin/activate
+        alembic upgrade head
+
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        pytest
