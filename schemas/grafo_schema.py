@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Tuple, Optional, Union
 from uuid import UUID
 
@@ -12,8 +12,7 @@ class NoCreate(NoBase):
 class NoResponse(NoBase):
     id: UUID
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ArestaBase(BaseModel):
     no_origem_id: str
@@ -26,8 +25,7 @@ class ArestaCreate(ArestaBase):
 class ArestaResponse(ArestaBase):
     id: UUID
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class GrafoBase(BaseModel):
     nome: str
@@ -41,8 +39,7 @@ class GrafoResponse(GrafoBase):
     nos: List[NoResponse]
     arestas: List[ArestaResponse]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class GrafoUpdate(BaseModel):
     nome: Optional[str] = None

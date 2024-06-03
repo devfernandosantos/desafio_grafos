@@ -1,8 +1,7 @@
 import uuid
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy.orm import relationship, Session, declarative_base
 from geoalchemy2 import Geometry
 from sqlalchemy import func
 

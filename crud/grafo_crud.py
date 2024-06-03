@@ -5,6 +5,7 @@ from sqlalchemy import func
 from typing import List
 from collections import OrderedDict
 import uuid
+import networkx as nx
 
 def create_grafo(db: Session, grafo: GrafoCreate) -> GrafoResponse:
     db_grafo = Grafo(id=uuid.uuid4(), nome=grafo.nome)
@@ -55,8 +56,8 @@ def get_grafo(db: Session, grafo_id: uuid.UUID) -> GrafoResponse:
 
     return formatar_response(db_grafo, db)
 
-def get_all_grafos(db: Session, skip: int = 0, limit: int = 100) -> List[GrafoResponse]:
-    grafos = db.query(Grafo).offset(skip).limit(limit).all()
+def get_all_grafos(db: Session) -> List[GrafoResponse]:
+    grafos = db.query(Grafo).all()
     return [formatar_response(grafo, db) for grafo in grafos]
 
 def update_grafo(db: Session, grafo_id: uuid.UUID, grafo: GrafoUpdate) -> GrafoResponse:
@@ -107,3 +108,37 @@ def formatar_response(grafo: Grafo, db: Session) -> GrafoResponse:
         ("nos", nos),
         ("arestas", arestas)
     ])
+
+def get_all_routes(db: Session, grafo_id: uuid.UUID, start_node_id: uuid.UUID, end_node_id: uuid.UUID, max_stops: int = None):
+    grafo = db.query(Grafo).filter(Grafo.id == grafo_id).first()
+    if not grafo:
+        return None
+
+    G = nx.DiGraph()
+
+    for no in grafo.nos:
+        G.add_node(no.id, name=no.nome, coordenada=no.coordenada)
+
+    for aresta in grafo.arestas:
+        G.add_edge(aresta.no_origem_id, aresta.no_destino_id, id=aresta.id)
+
+    all_paths = list(nx.all_simple_paths(G, source=start_node_id, target=end_node_id, cutoff=max_stops))
+    
+    return all_paths
+
+def get_shortest_route(db: Session, grafo_id: uuid.UUID, start_node_id: uuid.UUID, end_node_id: uuid.UUID):
+    grafo = db.query(Grafo).filter(Grafo.id == grafo_id).first()
+    if not grafo:
+        return None
+
+    G = nx.DiGraph()
+
+    for no in grafo.nos:
+        G.add_node(no.id, name=no.nome, coordenada=no.coordenada)
+
+    for aresta in grafo.arestas:
+        G.add_edge(aresta.no_origem_id, aresta.no_destino_id, id=aresta.id)
+
+    shortest_path = nx.shortest_path(G, source=start_node_id, target=end_node_id, weight=None, method='dijkstra')
+    
+    return shortest_path
