@@ -14,11 +14,11 @@ jobs:
 
     services:
       db:
-        image: postgres:13
+        image: postgis/postgis:13-3.1
         env:
-          POSTGRES_USER: ${POSTGRES_USER}
-          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-          POSTGRES_DB: ${POSTGRES_DB}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: grafos_db
         ports:
           - 5432:5432
         options: >-
@@ -28,7 +28,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: ${DATABASE_DRIVER_URL}
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/grafos_db
+      DATABASE_DRIVER_URL: postgres+psycopg2://postgres:postgres@localhost:5432/grafos_db
 
     steps:
     - name: Check out code
@@ -47,7 +48,11 @@ jobs:
         pip install -r requirements.txt
 
     - name: Wait for PostgreSQL to be ready
-      run: sleep 20
+      run: |
+        until pg_isready -h localhost -U postgres -d grafos_db; do
+          echo "Waiting for PostgreSQL..."
+          sleep 1
+        done
 
     - name: Run Alembic migrations
       run: |
